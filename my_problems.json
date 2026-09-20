@@ -1,0 +1,18 @@
+[
+  {
+    "id": "my_1",
+    "question": "Given a circle with center O and a point A on its circumference, construct a regular heptagon ABCDEFG inscribed in the circle."
+  },
+  {
+    "id": "my_2",
+    "question": "Given a circle with center O and a point A on its circumference, construct a regular octagon ABCDEFGH inscribed in the circle."
+  },
+  {
+    "id": "my_3",
+    "question": "Given an angle ∠BAC, construct two rays that divide the angle into three equal parts."
+  },
+  {
+    "id": "my_4",
+    "question": "Given a square ABCD, construct another square that has twice the area of ABCD."
+  }
+]
