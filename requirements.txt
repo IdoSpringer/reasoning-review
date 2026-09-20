@@ -1,0 +1,15 @@
+# Core (CPU-safe: data prep, scoring, tests)
+#  - everything below is also required on the GPU box; install before training.
+huggingface_hub
+
+# GPU-only training/inference stack (install on the provider box, not locally):
+# unsloth
+# trl
+# transformers
+# datasets
+# accelerate
+# peft
+# torch            # CUDA build, e.g. pip install torch --index-url https://download.pytorch.org/whl/cu121
+
+# Optional: VLM-T judge via OpenRouter (eval/score.py --vlm-judge)
+# openai
