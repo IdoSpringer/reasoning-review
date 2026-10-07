@@ -1,0 +1,6 @@
+# Evaluating Reasoning Capabilities of Large Language Models
+## Abstract
+In recent years, Large Language Models (LLMs) shift from next token predictors to models that use intermediate output tokens to mimic human reasoning. However, despite the success of those "reasoning models" in solving complex tasks, it is still debatable whether these models develop novel reasoning capabilities during training, or they simply reflect known reasoning traces from the training data. 
+In this short work, I review the recent advances in the LLM literature that lead to the current frontier reasoning models. Later, I review the generalization capabilities of these models, and show that their claimed reasoning capabilities are a mirage that does not generalizes out-of-distribution where the training and evaluation sets are carefully controlled. In a limited experimental part, I also demonstrate the incapability of frontier models in geometric reasoning, conducting an experiment inspired by Plato's Meno.
+
+See [the seminar paper](final-paper.pdf)
