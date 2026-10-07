@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!-- Geogebra viewer: paste/type GeoGebra construction code (like the ```geogebra
+blocks in *_report.md) and see the resulting objects.
+
+No install needed — loads GeoGebra's official applet from geogebra.org CDN.
+
+Open it with a ?file= query to auto-load a JSONL report:
+  viewer.html?file=my_problems_report.md          (parses geogebra blocks)
+  viewer.html?file=eval/outputs/heldout.jsonl     (uses generated_code field)
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>GeoGebra code viewer</title>
+<style>
+  body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
+  #panel { width: 340px; padding: 10px; box-sizing: border-box; display: flex; flex-direction: column; border-right: 1px solid #ccc; }
+  #code { flex: 1; width: 100%; font-family: monospace; font-size: 12px; box-sizing: border-box; resize: none; }
+  #run { margin: 8px 0; padding: 8px; }
+  #selector { margin-bottom: 6px; max-width: 100%; }
+  #applet { flex: 1; }
+  #error { color: #b00; font-size: 12px; margin-top: 6px; min-height: 2em; white-space: pre-wrap; }
+</style>
+<script src="https://www.geogebra.org/apps/deployggb.js"></script>
+</head>
+<body>
+<div id="panel">
+  <select id="selector" style="display:none"></select>
+  <textarea id="code" spellcheck="false"></textarea>
+  <button id="run">Run</button>
+  <div id="error"></div>
+</div>
+<div id="applet"></div>
+<script>
+var params = new URLSearchParams(location.search);
+var file = params.get("file");
+
+var applet = new GGBApplet({
+  appName: "classic",
+  width: 1200, height: 1000,
+  showToolBar: false, showAlgebraInput: false, showMenuBar: false,
+  perspective: "T",
+  appletOnLoad: function (api) {
+    window.ggb = api;
+    runBtn.onclick();
+  }
+}, true);
+applet.inject("applet");
+
+var runBtn = document.getElementById("run");
+var codeBox = document.getElementById("code");
+var errBox = document.getElementById("error");
+
+function runCode(text) {
+  if (!window.ggb) return;
+  errBox.textContent = "";
+  window.ggb.reset();
+  var bad = [];
+  text.split("\n").forEach(function (line) {
+    line = line.trim();
+    if (!line) return;
+    if (!window.ggb.evalCommand(line)) bad.push(line);
+  });
+  if (bad.length) errBox.textContent = "Rejected lines:\n" + bad.join("\n");
+}
+
+runBtn.onclick = function () { runCode(codeBox.value); };
+
+// Auto-load from a report (.md) or inference output (.jsonl) when ?file= given
+if (file) {
+  fetch(file).then(function (r) { return r.text(); }).then(function (text) {
+    var blocks = [];
+    if (file.endsWith(".jsonl")) {
+      text.trim().split("\n").forEach(function (l) {
+        var rec;
+        try { rec = JSON.parse(l); } catch (e) { return; }
+        if (!rec) return;
+        var code = rec.generated_code;
+        if (!code && typeof rec.output === "string") {
+          var m = /```(?:geogebra|ggb)?\s*\n([\s\S]*?)```/.exec(rec.output);
+          code = m ? m[1].trim() : "";
+        }
+        blocks.push({ label: rec.id, code: code || "" });
+      });
+    } else {
+      var re = /```(?:geogebra|ggb)\s*\n([\s\S]*?)```/g, m, i = 1;
+      while ((m = re.exec(text))) blocks.push({ label: "block " + (i++), code: m[1].trim() });
+    }
+    var sel = document.getElementById("selector");
+    if (blocks.length > 1) {
+      sel.style.display = "block";
+      blocks.forEach(function (b, i) {
+        var o = document.createElement("option");
+        o.textContent = b.label; o.value = i; sel.appendChild(o);
+      });
+      sel.onchange = function () {
+        codeBox.value = blocks[sel.value].code; runCode(codeBox.value);
+      };
+    }
+    codeBox.value = blocks[0] ? blocks[0].code : "";
+    runCode(codeBox.value);  // applet may have loaded before the fetch resolved
+  });
+}
+</script>
+</body>
+</html>
